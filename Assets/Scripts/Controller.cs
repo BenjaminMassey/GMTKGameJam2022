@@ -34,6 +34,8 @@ public class Controller : MonoBehaviour
     private GameObject mDice;
     private GameObject mBottom;
 
+    private bool mExploding = false;
+
     private bool mJumping = false;
     private bool mDescent = false;
 
@@ -57,6 +59,10 @@ public class Controller : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
+        if (Input.GetKeyDown(KeyCode.E)) Explode();
+
+        if (mExploding) mCameraObj.transform.LookAt(mDice.transform);
+
         Vector3 force = Vector3.zero;
 
         force += Move();
@@ -74,6 +80,8 @@ public class Controller : MonoBehaviour
 
     Vector3 Move() 
     {
+        if (mExploding) return Vector3.zero;
+
         int x = 0;
         int y = 0;
         x += Input.GetKey(KeyCode.D) ? 1 : 0;
@@ -91,6 +99,8 @@ public class Controller : MonoBehaviour
 
     Vector3 Jump()
     {
+        if (mExploding) return Vector3.zero;
+
         if (Input.GetKeyDown(KeyCode.Space) && !mJumping)
         {
             StartCoroutine(HandleJumping());
@@ -101,6 +111,8 @@ public class Controller : MonoBehaviour
 
     void HandleCamera()
     {
+        if (mExploding) return;
+
         float x = Input.GetAxis("Mouse X");
         float y = Input.GetAxis("Mouse Y");
         Vector3 euler = mCameraObj.transform.eulerAngles;
@@ -118,7 +130,7 @@ public class Controller : MonoBehaviour
 
     IEnumerator HandleTurning() 
     {
-        while (true) { 
+        while (true) {
             foreach (GameObject part in new GameObject[] { mDice, mBottom })
             {
                 float diff = mCameraObj.transform.eulerAngles.y - part.transform.eulerAngles.y;
@@ -136,9 +148,9 @@ public class Controller : MonoBehaviour
         }
     }
 
-    IEnumerator HandleJumping() 
+    IEnumerator HandleJumping()
     {
-        if (mJumping) yield break;
+        if (mJumping || mExploding) yield break;
         
         mJumping = true;
         while (mJumping) {
@@ -152,6 +164,8 @@ public class Controller : MonoBehaviour
 
     void MaxSpeed() 
     {
+        if (mExploding) return;
+
         Vector3 vel = mPlayerRB.velocity;
         mPlayerRB.velocity = new Vector3(
             Mathf.Min(vel.x, mMaxVelocity),
@@ -161,8 +175,22 @@ public class Controller : MonoBehaviour
     }
 
     void WiggleLegs() {
+        if (mExploding) return;
+
         mBottom.transform.Rotate(mBottom.transform.up, mWiggleFeetFront ? 0.35f : -0.35f);
         if ((Time.frameCount % 250.0f) == 0) mWiggleFeetFront = !mWiggleFeetFront;
+    }
+
+    void Explode() 
+    {
+        mExploding = true;
+        mCameraObj.transform.SetParent(null);
+        mPlayerRB.constraints = RigidbodyConstraints.None;
+        mPlayerRB.AddExplosionForce(500.0f, mPlayerObj.transform.forward, 100.0f);
+        mPlayerRB.AddTorque(mPlayerObj.transform.right);
+        mDice.transform.Find("Base").gameObject.GetComponent<BoxCollider>().isTrigger = false;
+        GetComponent<BoxCollider>().isTrigger = true;
+        mBottom.SetActive(false);
     }
 
 }

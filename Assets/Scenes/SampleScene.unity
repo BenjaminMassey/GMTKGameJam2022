@@ -241,6 +241,18 @@ MonoBehaviour:
   mMouseSpeed: 20
   mTurnSpeed: 2.5
   mMaxVelocity: 20
+--- !u!114 &929643629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929643627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f36edc18dff7e5c4896f32f0d5e6d99e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &929643630 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4603584135629851916, guid: b8607e2a84ec252448b86ac66a8c6c31, type: 3}
@@ -470,6 +482,10 @@ PrefabInstance:
     - target: {fileID: 4603584134397238138, guid: b8607e2a84ec252448b86ac66a8c6c31, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4603584134527500558, guid: b8607e2a84ec252448b86ac66a8c6c31, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4603584134574145993, guid: b8607e2a84ec252448b86ac66a8c6c31, type: 3}
       propertyPath: m_Enabled
