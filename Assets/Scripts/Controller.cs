@@ -37,6 +37,8 @@ public class Controller : MonoBehaviour
     private bool mJumping = false;
     private bool mDescent = false;
 
+    private bool mWiggleFeetFront = true;
+
     // Start is called before the first frame update
     void Start() 
     {
@@ -58,6 +60,8 @@ public class Controller : MonoBehaviour
         Vector3 force = Vector3.zero;
 
         force += Move();
+
+        if (force != Vector3.zero && !mJumping) WiggleLegs();
 
         force += Jump();
 
@@ -155,4 +159,10 @@ public class Controller : MonoBehaviour
             Mathf.Min(vel.z, mMaxVelocity)
         );
     }
+
+    void WiggleLegs() {
+        mBottom.transform.Rotate(mBottom.transform.up, mWiggleFeetFront ? 0.35f : -0.35f);
+        if ((Time.frameCount % 250.0f) == 0) mWiggleFeetFront = !mWiggleFeetFront;
+    }
+
 }
