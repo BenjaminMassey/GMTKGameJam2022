@@ -29,6 +29,12 @@ public class Controller : MonoBehaviour
     [SerializeField]
     private float mMaxVelocity = 20.0f;
 
+    private Quaternion mPlayerStartRot;
+    private float mPlayerStartY;
+
+    private Quaternion mCameraStartRot;
+    private Vector3 mCameraStartLocalPos;
+
     private Rigidbody mPlayerRB;
 
     private GameObject mDice;
@@ -41,9 +47,17 @@ public class Controller : MonoBehaviour
 
     private bool mWiggleFeetFront = true;
 
+    private int mSide = 1;
+
     // Start is called before the first frame update
     void Start() 
     {
+        mPlayerStartRot = mPlayerObj.transform.rotation;
+        mPlayerStartY = mPlayerObj.transform.position.y;
+
+        mCameraStartRot = mCameraObj.transform.rotation;
+        mCameraStartLocalPos = mCameraObj.transform.localPosition;
+
         mPlayerRB = mPlayerObj.GetComponent<Rigidbody>();
 
         mDice = mPlayerObj.transform.Find("Dice").gameObject;
@@ -131,18 +145,21 @@ public class Controller : MonoBehaviour
     IEnumerator HandleTurning() 
     {
         while (true) {
-            foreach (GameObject part in new GameObject[] { mDice, mBottom })
+            if (!mExploding)
             {
-                float diff = mCameraObj.transform.eulerAngles.y - part.transform.eulerAngles.y;
-                if (diff > 180.0f) diff -= 360.0f;
-                else if (diff < -180.0f) diff += 360.0f;
-                part.transform.Rotate(
-                    new Vector3(
-                        0.0f,
-                        diff,
-                        0.0f),
-                    diff > mTurnSpeed || diff < -mTurnSpeed ? mTurnSpeed : 0.0f
-                );
+                foreach (GameObject part in new GameObject[] { mDice, mBottom })
+                {
+                    float diff = mCameraObj.transform.eulerAngles.y - part.transform.eulerAngles.y;
+                    if (diff > 180.0f) diff -= 360.0f;
+                    else if (diff < -180.0f) diff += 360.0f;
+                    part.transform.Rotate(
+                        new Vector3(
+                            0.0f,
+                            diff,
+                            0.0f),
+                        diff > mTurnSpeed || diff < -mTurnSpeed ? mTurnSpeed : 0.0f
+                    );
+                }
             }
             yield return new WaitForSeconds(1.0f / 100.0f);
         }
@@ -191,6 +208,93 @@ public class Controller : MonoBehaviour
         mDice.transform.Find("Base").gameObject.GetComponent<BoxCollider>().isTrigger = false;
         GetComponent<BoxCollider>().isTrigger = true;
         mBottom.SetActive(false);
+        StartCoroutine(CheckReset());
     }
 
+    IEnumerator CheckReset()
+    {
+        yield return new WaitForSeconds(0.5f);
+        while (true)
+        {
+            if (Mathf.Abs(mPlayerRB.velocity.x) < 0.05f &&
+                Mathf.Abs(mPlayerRB.velocity.y) < 0.05f &&
+                Mathf.Abs(mPlayerRB.velocity.z) < 0.05f &&
+                Mathf.Abs(mPlayerRB.angularVelocity.x) < 0.05f &&
+                Mathf.Abs(mPlayerRB.angularVelocity.y) < 0.05f &&
+                Mathf.Abs(mPlayerRB.angularVelocity.z) < 0.05f)
+            {
+                break;
+            }
+            yield return new WaitForFixedUpdate();
+        }
+        yield return new WaitForSeconds(1.5f);
+        mSide = GetSide();
+        Debug.Log("Got side of " + mSide);
+        PerformReset();
+    }
+
+    void PerformReset()
+    {
+        mPlayerRB.velocity = Vector3.zero;
+        mPlayerRB.angularVelocity = Vector3.zero;
+        mPlayerObj.transform.rotation = mPlayerStartRot;
+        Vector3 pos = mPlayerObj.transform.position;
+        mPlayerObj.transform.position = new Vector3(pos.x, mPlayerStartY, pos.z);
+        mCameraObj.transform.SetParent(mPlayerObj.transform);
+        mCameraObj.transform.rotation = mCameraStartRot;
+        mCameraObj.transform.localPosition = mCameraStartLocalPos;
+        mPlayerRB.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        mDice.transform.Find("Base").gameObject.GetComponent<BoxCollider>().isTrigger = true;
+        GetComponent<BoxCollider>().isTrigger = false;
+        mBottom.SetActive(true);
+        RotateFaces();
+        mExploding = false;
+    }
+
+    void RotateFaces()
+    {
+        Vector3 euler = Vector3.zero;
+        switch (mSide)
+        {
+            case 1:
+                euler = new Vector3(0.0f, 0.0f, 0.0f);
+                break;
+            case 2:
+                euler = new Vector3(0.0f, 0.0f, -90.0f);
+                break;
+            case 3:
+                euler = new Vector3(-90.0f, 0.0f, 0.0f);
+                break;
+            case 4:
+                euler = new Vector3(90.0f, 0.0f, 0.0f);
+                break;
+            case 5:
+                euler = new Vector3(0.0f, 0.0f, 90.0f);
+                break;
+            case 6:
+                euler = new Vector3(180.0f, 0.0f, 0.0f);
+                break;
+            default:
+                euler = Vector3.zero;
+                break;
+        }
+        mDice.transform.Find("Faces").localEulerAngles = euler;
+    }
+
+    int GetSide()
+    {
+        float max = -999.9f;
+        int result = -1;
+        int i = 1;
+        foreach (string name in new string[] { "One", "Two", "Three", "Four", "Five", "Six" })
+        {
+            float val = mDice.transform.Find("Faces").transform.Find(name).transform.GetChild(0).transform.position.y;
+            if (val > max) {
+                max = val;
+                result = i;
+            }
+            i++;
+        }
+        return result;
+    }
 }
