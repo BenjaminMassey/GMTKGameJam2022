@@ -20,6 +20,11 @@ public class Tweeners : MonoBehaviour
         StartCoroutine(TweenRotationCoroutine(t, target_euler, total_time, update, finish));
     }
 
+    public void TweenScale(Transform t, Vector3 target_scale, float total_time, Action update = null, Action finish = null)
+    {
+        StartCoroutine(TweenScaleCoroutine(t, target_scale, total_time, update, finish));
+    }
+
     public void TweenNormal(float total_time, Action<float> update, Action finish = null)
     {
         StartCoroutine(TweenNormalCoroutine(total_time, update, finish));
@@ -75,6 +80,22 @@ public class Tweeners : MonoBehaviour
             yield return new WaitForSeconds(time_step);
         }
         t.eulerAngles = target_euler;
+        if (finish != null) finish();
+    }
+    
+    private IEnumerator TweenScaleCoroutine(Transform t, Vector3 target_scale, float total_time, Action update, Action finish)
+    {
+        Vector3 start_scale = t.localScale;
+        float time_step = 1.0f / 50.0f;
+        float steps = total_time / time_step;
+        Vector3 amount = (target_scale - start_scale) / steps;
+        for (int i = 0; i < steps; i++)
+        {
+            t.localScale = t.localScale + amount;
+            if (update != null) update();
+            yield return new WaitForSeconds(time_step);
+        }
+        t.localScale = target_scale;
         if (finish != null) finish();
     }
 

@@ -270,10 +270,12 @@ public class Controller : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
+        
         camT.eulerAngles = Vector3.zero;
-        mTweeners.TweenRotation(camT, new Vector3(90.0f, 0.0f, 0.0f), 0.5f);
-        mTweeners.TweenPosition(camT, diceT.position + (Vector3.up * (mCameraPlayerDistance * 0.5f)),  0.5f);
-        yield return new WaitForSeconds(1.5f); // includes 0.5 tween
+        mTweeners.TweenRotation(camT, new Vector3(90.0f, 0.0f, 0.0f), 0.25f);
+        mTweeners.TweenPosition(camT, diceT.position + (Vector3.up * (mCameraPlayerDistance * 0.5f)),  0.25f);
+        yield return new WaitForSeconds(0.5f); // includes 0.5 tween
+
         mSide = GetSide();
         Debug.Log("Got side of " + mSide);
         mAttacks.Attack(mSide, diceT.position);
