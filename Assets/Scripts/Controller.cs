@@ -35,6 +35,8 @@ public class Controller : MonoBehaviour
     private Quaternion mCameraStartRot;
     private Vector3 mCameraStartLocalPos;
 
+    private Tweeners mTweeners;
+
     private Rigidbody mPlayerRB;
 
     private GameObject mDice;
@@ -58,6 +60,8 @@ public class Controller : MonoBehaviour
         mCameraStartRot = mCameraObj.transform.rotation;
         mCameraStartLocalPos = mCameraObj.transform.localPosition;
 
+        mTweeners = GameObject.Find("Master").GetComponent<Tweeners>();
+
         mPlayerRB = mPlayerObj.GetComponent<Rigidbody>();
 
         mDice = mPlayerObj.transform.Find("Dice").gameObject;
@@ -74,8 +78,6 @@ public class Controller : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
         if (Input.GetKeyDown(KeyCode.E)) Explode();
-
-        if (mExploding) mCameraObj.transform.LookAt(mDice.transform);
 
         Vector3 force = Vector3.zero;
 
@@ -194,12 +196,14 @@ public class Controller : MonoBehaviour
     void WiggleLegs() {
         if (mExploding) return;
 
-        mBottom.transform.Rotate(mBottom.transform.up, mWiggleFeetFront ? 0.35f : -0.35f);
-        if ((Time.frameCount % 250.0f) == 0) mWiggleFeetFront = !mWiggleFeetFront;
+        mBottom.transform.Rotate(mBottom.transform.up, mWiggleFeetFront ? 0.45f : -0.45f);
+        if ((Time.frameCount % 200.0f) == 0) mWiggleFeetFront = !mWiggleFeetFront;
     }
 
     void Explode() 
     {
+        if (mExploding) return;
+
         mExploding = true;
         mCameraObj.transform.SetParent(null);
         mPlayerRB.constraints = RigidbodyConstraints.None;
@@ -213,21 +217,53 @@ public class Controller : MonoBehaviour
 
     IEnumerator CheckReset()
     {
-        yield return new WaitForSeconds(0.5f);
+        bool started = false;
+        Transform camT = mCameraObj.transform;
+        Transform diceT = mDice.transform;
+        int count = 0;
         while (true)
         {
-            if (Mathf.Abs(mPlayerRB.velocity.x) < 0.05f &&
+            if (started &&
+                Mathf.Abs(mPlayerRB.velocity.x) < 0.05f &&
                 Mathf.Abs(mPlayerRB.velocity.y) < 0.05f &&
                 Mathf.Abs(mPlayerRB.velocity.z) < 0.05f &&
                 Mathf.Abs(mPlayerRB.angularVelocity.x) < 0.05f &&
                 Mathf.Abs(mPlayerRB.angularVelocity.y) < 0.05f &&
                 Mathf.Abs(mPlayerRB.angularVelocity.z) < 0.05f)
             {
-                break;
+                count++;
             }
-            yield return new WaitForFixedUpdate();
+            else if (!started &&
+                     Mathf.Abs(mPlayerRB.velocity.x) > 0.05f &&
+                     Mathf.Abs(mPlayerRB.velocity.y) > 0.05f &&
+                     Mathf.Abs(mPlayerRB.velocity.z) > 0.05f &&
+                     Mathf.Abs(mPlayerRB.angularVelocity.x) > 0.05f &&
+                     Mathf.Abs(mPlayerRB.angularVelocity.y) > 0.05f &&
+                     Mathf.Abs(mPlayerRB.angularVelocity.z) > 0.05f)
+            {
+                started = true;
+            }
+            else
+            {
+                count = 0;
+            }
+
+            if (count >= 50) break;
+
+            camT.LookAt(mDice.transform);
+            //float dist = Vector3.Distance(camT.position, diceT.position);
+            //if (true || dist > 12.0f)
+            //{
+            //    camT.LookAt(mDice.transform.position);
+            //    camT.Translate(camT.forward * (dist - 12.0f));
+            //}
+
+            yield return new WaitForEndOfFrame();
         }
-        yield return new WaitForSeconds(1.5f);
+        camT.eulerAngles = Vector3.zero;
+        mTweeners.TweenRotation(camT, new Vector3(90.0f, 0.0f, 0.0f), 0.5f);
+        mTweeners.TweenPosition(camT, diceT.position + (Vector3.up * 6.0f),  0.5f);
+        yield return new WaitForSeconds(1.5f); // includes 0.5 tween
         mSide = GetSide();
         Debug.Log("Got side of " + mSide);
         PerformReset();
@@ -239,10 +275,10 @@ public class Controller : MonoBehaviour
         mPlayerRB.angularVelocity = Vector3.zero;
         mPlayerObj.transform.rotation = mPlayerStartRot;
         Vector3 pos = mPlayerObj.transform.position;
-        mPlayerObj.transform.position = new Vector3(pos.x, mPlayerStartY, pos.z);
+        mTweeners.TweenPosition(mPlayerObj.transform, new Vector3(pos.x, mPlayerStartY, pos.z), 0.25f);
         mCameraObj.transform.SetParent(mPlayerObj.transform);
-        mCameraObj.transform.rotation = mCameraStartRot;
-        mCameraObj.transform.localPosition = mCameraStartLocalPos;
+        mTweeners.TweenRotation(mCameraObj.transform, mCameraStartRot.eulerAngles, 0.25f);
+        mTweeners.TweenLocalPosition(mCameraObj.transform, mCameraStartLocalPos, 0.25f);
         mPlayerRB.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         mDice.transform.Find("Base").gameObject.GetComponent<BoxCollider>().isTrigger = true;
         GetComponent<BoxCollider>().isTrigger = false;
