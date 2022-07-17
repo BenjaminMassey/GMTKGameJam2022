@@ -35,7 +35,10 @@ public class Controller : MonoBehaviour
     private Quaternion mCameraStartRot;
     private Vector3 mCameraStartLocalPos;
 
+    private float mCameraPlayerDistance;
+
     private Tweeners mTweeners;
+    private Attacks mAttacks;
 
     private Rigidbody mPlayerRB;
 
@@ -60,7 +63,11 @@ public class Controller : MonoBehaviour
         mCameraStartRot = mCameraObj.transform.rotation;
         mCameraStartLocalPos = mCameraObj.transform.localPosition;
 
+        mCameraPlayerDistance = Vector3.Distance(mPlayerObj.transform.position, mCameraObj.transform.position);
+
         mTweeners = GameObject.Find("Master").GetComponent<Tweeners>();
+
+        mAttacks = mPlayerObj.GetComponent<Attacks>();
 
         mPlayerRB = mPlayerObj.GetComponent<Rigidbody>();
 
@@ -251,21 +258,18 @@ public class Controller : MonoBehaviour
             if (count >= 50) break;
 
             camT.LookAt(mDice.transform);
-            //float dist = Vector3.Distance(camT.position, diceT.position);
-            //if (true || dist > 12.0f)
-            //{
-            //    camT.LookAt(mDice.transform.position);
-            //    camT.Translate(camT.forward * (dist - 12.0f));
-            //}
+            float dist = Vector3.Distance(camT.position, diceT.position);
+            camT.Translate(camT.forward * (dist - mCameraPlayerDistance));
 
             yield return new WaitForEndOfFrame();
         }
         camT.eulerAngles = Vector3.zero;
         mTweeners.TweenRotation(camT, new Vector3(90.0f, 0.0f, 0.0f), 0.5f);
-        mTweeners.TweenPosition(camT, diceT.position + (Vector3.up * 6.0f),  0.5f);
+        mTweeners.TweenPosition(camT, diceT.position + (Vector3.up * (mCameraPlayerDistance * 0.5f)),  0.5f);
         yield return new WaitForSeconds(1.5f); // includes 0.5 tween
         mSide = GetSide();
         Debug.Log("Got side of " + mSide);
+        mAttacks.Attack(mSide, diceT.position);
         PerformReset();
     }
 

@@ -25,6 +25,11 @@ public class Tweeners : MonoBehaviour
         StartCoroutine(TweenNormalCoroutine(total_time, update, finish));
     }
 
+    public void TimedCallback(Action action, float time)
+    {
+        StartCoroutine(TimedCallbackCoroutine(action, time));
+    }
+
     private IEnumerator TweenPositionCoroutine(Transform t, Vector3 target_pos, float total_time, Action update, Action finish)
     {
         Vector3 start_pos = t.position;
@@ -84,5 +89,11 @@ public class Tweeners : MonoBehaviour
         }
         if (update != null) update(1.0f);
         if (finish != null) finish();
+    }
+
+    private IEnumerator TimedCallbackCoroutine(Action action, float time)
+    {
+        yield return new WaitForSeconds(time);
+        action();
     }
 }

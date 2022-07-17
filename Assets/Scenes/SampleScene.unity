@@ -241,6 +241,19 @@ MonoBehaviour:
   mMouseSpeed: 20
   mTurnSpeed: 2.5
   mMaxVelocity: 20
+--- !u!114 &929643629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929643627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 663646b75b3db5f478e43c86896b836c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mLightning: {fileID: 7819443655710807277, guid: b83ad271bab9c754d93e9ee24d90ff05, type: 3}
 --- !u!4 &929643630 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4603584135629851916, guid: b8607e2a84ec252448b86ac66a8c6c31, type: 3}
@@ -323,7 +336,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.17364815, y: -0, z: -0, w: 0.9848077}
-  m_LocalPosition: {x: 0, y: 3, z: -10}
+  m_LocalPosition: {x: 0, y: 6, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 929643630}
@@ -462,7 +475,7 @@ Transform:
   m_GameObject: {fileID: 1797413657}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 50, y: 0.1, z: 50}
+  m_LocalScale: {x: 100, y: 0.1, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
