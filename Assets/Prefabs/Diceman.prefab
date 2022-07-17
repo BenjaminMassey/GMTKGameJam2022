@@ -429,6 +429,8 @@ GameObject:
   - component: {fileID: 4603584135629851916}
   - component: {fileID: 3223978059147094419}
   - component: {fileID: 7497489069056996499}
+  - component: {fileID: 8660150061829972443}
+  - component: {fileID: 3243195268615153902}
   m_Layer: 0
   m_Name: Diceman
   m_TagString: Untagged
@@ -481,6 +483,44 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2, y: 0.1, z: 2}
   m_Center: {x: 0, y: -3.1, z: 0}
+--- !u!114 &8660150061829972443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603584135629851915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 663646b75b3db5f478e43c86896b836c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mFire: {fileID: 846600106659972630, guid: 9dd5910552330d64ebcce9a44fd6b785, type: 3}
+  mIce: {fileID: 127090905464089237, guid: dffa1bfa94a042f46a17015d65ba444d, type: 3}
+  mLightning: {fileID: 7819443655710807277, guid: b83ad271bab9c754d93e9ee24d90ff05, type: 3}
+  mNature: {fileID: 7253651727768900036, guid: d991f214103268a40b47a2e44806423a, type: 3}
+  mRock: {fileID: 5554522528968004615, guid: 5e4ef553136d5a84898132d0a8be56cc, type: 3}
+  mVoid: {fileID: 4277338686558976342, guid: a3c2dcc996ed9124babd88c4dcb1e0f0, type: 3}
+--- !u!114 &3243195268615153902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603584135629851915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2abb401e3616d4a46bcb648c0470113c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mPlayerObj: {fileID: 4603584135629851915}
+  mCameraObj: {fileID: 0}
+  mSpeedFrontBack: 2
+  mSpeedLeftRight: 2
+  mJumpPower: 1000
+  mMouseSpeed: 20
+  mTurnSpeed: 2.5
+  mMaxVelocity: 20
 --- !u!1001 &5628934156528811360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -507,10 +547,6 @@ PrefabInstance:
     - target: {fileID: 8214225609078788843, guid: 3f5bea7c4f859af44919a0af58001a15, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8214225609078788843, guid: 3f5bea7c4f859af44919a0af58001a15, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8214225609078788843, guid: 3f5bea7c4f859af44919a0af58001a15, type: 3}
       propertyPath: m_LocalRotation.x

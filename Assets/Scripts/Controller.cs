@@ -86,6 +86,8 @@ public class Controller : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E)) Explode();
 
+        AttackDebug();
+
         Vector3 force = Vector3.zero;
 
         force += Move();
@@ -336,5 +338,16 @@ public class Controller : MonoBehaviour
             i++;
         }
         return result;
+    }
+
+    void AttackDebug()
+    {
+        Vector3 pos = mDice.transform.position + (Vector3.down * 3.0f);
+        if (Input.GetKeyDown(KeyCode.Alpha1)) mAttacks.Attack(1, pos);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) mAttacks.Attack(2, pos);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) mAttacks.Attack(3, pos);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) mAttacks.Attack(4, pos);
+        if (Input.GetKeyDown(KeyCode.Alpha5)) mAttacks.Attack(5, pos);
+        if (Input.GetKeyDown(KeyCode.Alpha6)) mAttacks.Attack(6, pos);
     }
 }
