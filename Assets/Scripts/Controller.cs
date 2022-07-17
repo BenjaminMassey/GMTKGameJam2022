@@ -37,6 +37,7 @@ public class Controller : MonoBehaviour
 
     private float mCameraPlayerDistance;
 
+    private State mState;
     private Tweeners mTweeners;
     private Attacks mAttacks;
 
@@ -65,6 +66,8 @@ public class Controller : MonoBehaviour
 
         mCameraPlayerDistance = Vector3.Distance(mPlayerObj.transform.position, mCameraObj.transform.position);
 
+        mState = GameObject.Find("Master").GetComponent<State>();
+
         mTweeners = GameObject.Find("Master").GetComponent<Tweeners>();
 
         mAttacks = mPlayerObj.GetComponent<Attacks>();
@@ -87,6 +90,8 @@ public class Controller : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E)) Explode();
 
         AttackDebug();
+
+        DamageDebug();
 
         Vector3 force = Vector3.zero;
 
@@ -349,5 +354,11 @@ public class Controller : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha4)) mAttacks.Attack(4, pos);
         if (Input.GetKeyDown(KeyCode.Alpha5)) mAttacks.Attack(5, pos);
         if (Input.GetKeyDown(KeyCode.Alpha6)) mAttacks.Attack(6, pos);
+    }
+
+    void DamageDebug()
+    {
+        if (Input.GetKeyDown(KeyCode.UpArrow)) mState.Damage(-10);
+        if (Input.GetKeyDown(KeyCode.DownArrow)) mState.Damage(10);
     }
 }
